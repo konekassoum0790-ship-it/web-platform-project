@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Espace Animateur</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<div class="container">
+    <header>
+        <h1>Espace Animateur</h1>
+        <p class="subtitle">Gestion de vos ateliers</p>
+        <div style="margin-top: 10px;">
+            <span style="background: #e9ecef; padding: 5px 10px; border-radius: 15px; font-size: 0.9em;">
+                👤 <span th:text="${session.user.nom}">Animateur</span>
+            </span>
+            <a href="/auth/logout" class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.9em; margin-left: 10px; text-decoration: none;">Déconnexion</a>
+        </div>
+    </header>
+
+    <main>
+        <h2>Bienvenue dans votre espace !</h2>
+        <!--<div class="info-section">
+            <h2>Bienvenue dans votre espace !</h2>
+            <p>Ici, vous pourrez bientôt gérer vos ateliers et voir les inscrits.</p>
+            <!- Content to be added later ->
+        </div>-->
+        <div class="info-section">
+
+            <h2>Vos Ateliers</h2>
+            <p style="margin-bottom: 20px;">Ici, vous pourrez bientôt gérer vos ateliers et voir les inscrits.</p>
+            <div th:if="${#lists.isEmpty(ateliers)}">
+                <p>Vous n'avez pas encore créé d'atelier.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(ateliers)}" class="atelier-list">
+                <div th:each="atelier : ${ateliers}" class="card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                    <h3 th:text="${atelier.titre}">Titre de l'atelier</h3>
+
+                    <div style="margin-top: 10px;">
+                        <a th:href="@{/animateur/ateliers/{id}/gestion(id=${atelier.id})}" class="btn btn-primary">
+                            Gérer / Ajouter Créneaux
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <a href="/animateur/ateliers/nouveau" class="btn btn-primary">Créer un nouvel atelier</a>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

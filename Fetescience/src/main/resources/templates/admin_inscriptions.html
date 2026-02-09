@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Inscriptions</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin_style.css}">
+
+
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<div class="container admin-container">
+    <header>
+        <h1>Administration des Inscriptions</h1>
+        <p class="subtitle">Gestion centralisée des participants et des créneaux</p>
+    </header>
+
+    <div th:if="${success}" class="alert alert-success">
+        ✅ <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger">
+        ❌ <span th:text="${error}"></span>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" th:text="${inscriptions.size()}">0</div>
+            <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-number" th:text="${inscriptions.?[statut.name() == 'EN_ATTENTE'].size()}">0</div>
+            <div class="stat-label">En Attente</div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-number" th:text="${inscriptions.?[statut.name() == 'VALIDEE'].size()}">0</div>
+            <div class="stat-label">Validées</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-number" th:text="${inscriptions.?[statut.name() == 'REFUSEE'].size()}">0</div>
+            <div class="stat-label">Refusées</div>
+        </div>
+    </div>
+
+    <div th:if="${inscriptions.isEmpty()}" class="empty-state">
+        <img th:src="@{/images/investigator_404.png}" alt="Vide" style="height: 100px; opacity: 0.5; margin-bottom: 10px;">
+        <p>Aucune inscription trouvée pour le moment.</p>
+    </div>
+
+    <div class="table-responsive" th:if="${!inscriptions.isEmpty()}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Participant</th>
+                <th>Email</th>
+                <th>Atelier</th>
+                <th>Créneau</th>
+                <th>Lieu</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="inscription : ${inscriptions}">
+                <td th:text="${'#' + inscription.id}" style="font-weight: bold; color: var(--medium-gray);">#1</td>
+                <td>
+                    <strong th:text="${inscription.participant.nom}">Nom</strong>
+                </td>
+                <td th:text="${inscription.participant.email}">email@test.com</td>
+                <td th:text="${inscription.creneau.atelier.titre}">Atelier</td>
+                <td>
+                    <span th:text="${inscription.creneau.horaireDebut} + 'h'">10h</span>
+                    <small style="color: var(--medium-gray);" th:text="'(' + ${inscription.creneau.duree} + ' min)'"></small>
+                </td>
+                <td th:text="${inscription.creneau.lieu}">Salle</td>
+                <td>
+                    <span class="badge badge-pending" th:if="${inscription.statut.name() == 'EN_ATTENTE'}">En Attente</span>
+                    <span class="badge badge-success" th:if="${inscription.statut.name() == 'VALIDEE'}">Validée</span>
+                    <span class="badge badge-danger" th:if="${inscription.statut.name() == 'REFUSEE'}">Refusée</span>
+                </td>
+                <td>
+                    <div class="actions-cell">
+                        <form th:action="@{/admin/inscriptions/valider/{id}(id=${inscription.id})}" method="post">
+                            <button type="submit"
+                                    class="btn-icon btn-validate"
+                                    th:classappend="${inscription.statut.name() == 'VALIDEE'} ? 'btn-disabled'"
+                                    th:disabled="${inscription.statut.name() == 'VALIDEE'}"
+                                    title="Valider">
+                                ✓
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/inscriptions/refuser/{id}(id=${inscription.id})}" method="post">
+                            <button type="submit"
+                                    class="btn-icon btn-refuse"
+                                    th:classappend="${inscription.statut.name() == 'REFUSEE'} ? 'btn-disabled'"
+                                    th:disabled="${inscription.statut.name() == 'REFUSEE'}"
+                                    title="Refuser">
+                                ✗
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: site-footer}"></div>
+
+</body>
+</html>

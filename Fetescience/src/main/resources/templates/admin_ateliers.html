@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Ateliers et Créneaux</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/management_grid.css}">
+    <link rel="stylesheet" th:href="@{/css/admin_style.css}">
+
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<div class="container admin-container">
+    <header style="text-align: center; margin-bottom: 40px;">
+        <h1>Administration des Ateliers</h1>
+        <p class="subtitle">Gérez les ateliers, les créneaux et leurs capacités</p>
+    </header>
+
+    <div th:if="${success}" class="alert alert-success">
+        ✅ <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger">
+        ❌ <span th:text="${error}"></span>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" th:text="${ateliers != null ? ateliers.size() : 0}">0</div>
+            <div class="stat-label">Ateliers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" th:text="${totalCreneaux}">0</div>
+            <div class="stat-label">Créneaux</div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-number" th:text="${creneauxDisponibles}">0</div>
+            <div class="stat-label">Disponibles</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-number" th:text="${creneauxComplets}">0</div>
+            <div class="stat-label">Complets</div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('ateliers', this)">Ateliers & Créneaux</button>
+        <button class="tab-btn" onclick="switchTab('ajouter', this)">Ajouter un Créneau</button>
+        <button class="tab-btn" onclick="switchTab('ajouter-atelier', this)">Ajouter un Atelier</button>
+    </div>
+
+    <div id="ateliers-tab" class="tab-content active">
+        <div class="management-grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));">
+            <div th:each="atelier : ${ateliers}" class="card">
+
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <h3 th:text="${atelier.titre}" style="color: var(--primary-color, #667eea); margin-bottom: 10px;">Titre Atelier</h3>
+
+                    <button class="btn-icon"
+                            style="background: none; border: none; cursor: pointer; opacity: 0.6;"
+                            title="Modifier l'atelier"
+                            th:attr="data-id=${atelier.id},
+                                     data-titre=${atelier.titre},
+                                     data-description=${atelier.description},
+                                     data-animateur-id=${atelier.animateur != null ? atelier.animateur.id : ''}"
+                            onclick="openEditAtelierModal(this)">
+                        <img th:src="@{/images/edit_icon.png}" alt="Edit" style="width: 18px; height: 18px;">
+                    </button>
+                </div>
+
+                <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">
+                    👨‍🏫 <strong th:text="${atelier.animateur != null ? atelier.animateur.nom : 'Non assigné'}">Animateur</strong>
+                </p>
+                <p th:if="${atelier.description}" th:text="${atelier.description}" style="font-size: 0.85em; color: #777; margin-bottom: 15px; font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"></p>
+
+                <div class="creneau-list">
+                    <div th:if="${atelier.creneaux.isEmpty()}" style="color: #999; font-style: italic;">
+                        Aucun créneau défini
+                    </div>
+
+                    <div th:each="creneau : ${atelier.creneaux}"
+                         class="creneau-item"
+                         th:classappend="${creneau.complet ? 'complet' : ''}">
+
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #333;">
+                                <span th:text="${creneau.horaireDebut} + 'h'">10h</span>
+                                <span style="font-weight: normal;"> à </span>
+                                <span th:text="${creneau.lieu}">Salle B</span>
+                            </div>
+                            <small style="color: #666;">
+                                ⏳ <span th:text="${creneau.duree}">60</span> min |
+                                👥 <span th:text="${creneau.inscriptions.size()}">0</span>/<span th:text="${creneau.capacite}">20</span>
+                            </small>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button class="btn-icon"
+                                    style="background: white; border: 1px solid #ddd; padding: 6px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;"
+                                    th:attr="data-id=${creneau.id},
+                                             data-capacite=${creneau.capacite},
+                                             data-horaire=${creneau.horaireDebut},
+                                             data-lieu=${creneau.lieu},
+                                             data-duree=${creneau.duree},
+                                             data-atelier-titre=${atelier.titre}"
+                                    onclick="openEditModal(this)">
+                                <img th:src="@{/images/edit_icon.png}" alt="Modifier" style="width: 16px; height: 16px;">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ajouter-tab" class="tab-content">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 style="margin-bottom: 20px; color: var(--primary-color, #667eea);">Nouveau créneau</h2>
+
+            <form th:action="@{/admin/ateliers/creneaux/ajouter}" method="post">
+                <div class="form-group">
+                    <label>Atelier concerné</label>
+                    <select name="atelierId" required class="form-control">
+                        <option value="">-- Sélectionnez un atelier --</option>
+                        <option th:each="atelier : ${ateliers}"
+                                th:value="${atelier.id}"
+                                th:text="${atelier.titre}">Atelier</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Horaire de début (Heure)</label>
+                    <input type="number" name="horaireDebut" min="8" max="20" required placeholder="Ex: 14" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Durée (minutes)</label>
+                    <input type="number" name="duree" min="15" step="15" value="60" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Lieu</label>
+                    <input type="text" name="lieu" required placeholder="Ex: Salle 12" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Capacité</label>
+                    <input type="number" name="capacite" min="1" max="200" value="20" required class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                    Enregistrer le créneau
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="ajouter-atelier-tab" class="tab-content">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 style="margin-bottom: 20px; color: var(--primary-color, #667eea);">Nouvel Atelier</h2>
+
+            <form th:action="@{/admin/ateliers/ajouter}" method="post">
+                <div class="form-group">
+                    <label>Titre de l'atelier</label>
+                    <input type="text" name="titre" required placeholder="Ex: Chimie Amusante" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="4" maxlength="500" placeholder="Courte description de l'atelier..." class="form-control"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Animateur Responsable</label>
+                    <select name="animateurId" class="form-control">
+                        <option value="">-- Aucun pour le moment --</option>
+                        <option th:each="anim : ${animateurs}"
+                                th:value="${anim.id}"
+                                th:text="${anim.nom + ' (' + anim.email + ')'}">Nom Animateur</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                    Créer l'atelier
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle" style="margin: 0; color: var(--primary-color, #667eea);">Modifier le créneau</h3>
+            <button class="btn-close" onclick="closeModal()">&times;</button>
+        </div>
+
+        <form id="editForm" th:action="@{/admin/ateliers/creneaux/modifier}" method="post">
+            <input type="hidden" id="creneauId" name="creneauId">
+
+            <div class="form-group">
+                <label>Horaire (H)</label>
+                <input type="number" id="editHoraire" name="horaireDebut" min="8" max="20" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Durée (min)</label>
+                <input type="number" id="editDuree" name="duree" min="15" step="15" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Lieu</label>
+                <input type="text" id="editLieu" name="lieu" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Capacité</label>
+                <input type="number" id="editCapacite" name="capacite" min="1" required class="form-control">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Enregistrer</button>
+                <button type="button" class="btn btn-outline" style="flex: 1; color: #dc3545; border-color: #dc3545;"
+                        onclick="if(confirm('Supprimer ce créneau ?')) deleteCreneau()">
+                    Supprimer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editAtelierModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin: 0; color: var(--primary-color, #667eea);">Modifier l'Atelier</h3>
+            <button class="btn-close" onclick="closeAtelierModal()">&times;</button>
+        </div>
+
+        <form id="editAtelierForm" th:action="@{/admin/ateliers/modifier}" method="post">
+            <input type="hidden" id="editAtelierId" name="id">
+
+            <div class="form-group">
+                <label>Titre</label>
+                <input type="text" id="editAtelierTitre" name="titre" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="editAtelierDescription" name="description" rows="4" maxlength="500" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Animateur</label>
+                <select id="editAtelierAnimateur" name="animateurId" class="form-control">
+                    <option value="">-- Aucun --</option>
+                    <option th:each="anim : ${animateurs}"
+                            th:value="${anim.id}"
+                            th:text="${anim.nom}">Nom Animateur</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Enregistrer</button>
+                <button type="button" class="btn btn-outline" style="flex: 1; color: #dc3545; border-color: #dc3545;"
+                        onclick="if(confirm('ATTENTION: Supprimer cet atelier supprimera également tous ses créneaux ! \n\nContinuer ?')) deleteAtelier()">
+                    Supprimer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: site-footer}"></div>
+
+<script>
+    // Tab switching
+    function switchTab(tabName, clickedButton) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabName + '-tab').classList.add('active');
+        if (clickedButton) clickedButton.classList.add('active');
+    }
+
+    // --- Modal Logic : Creneau ---
+    function openEditModal(button) {
+        const id = button.getAttribute('data-id');
+        const capacite = button.getAttribute('data-capacite');
+        const horaire = button.getAttribute('data-horaire');
+        const lieu = button.getAttribute('data-lieu');
+        const duree = button.getAttribute('data-duree');
+        const atelierTitre = button.getAttribute('data-atelier-titre');
+
+        document.getElementById('creneauId').value = id;
+        document.getElementById('editCapacite').value = capacite;
+        document.getElementById('editHoraire').value = horaire;
+        document.getElementById('editLieu').value = lieu;
+        document.getElementById('editDuree').value = duree;
+
+        if(atelierTitre) {
+            document.getElementById('modalTitle').textContent = 'Modifier le créneau de ' + atelierTitre;
+        } else {
+            document.getElementById('modalTitle').textContent = 'Modifier le créneau';
+        }
+
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.remove('active');
+    }
+
+    function deleteCreneau() {
+        const creneauId = document.getElementById('creneauId').value;
+        const form = document.getElementById('editForm');
+        form.action = '/admin/ateliers/creneaux/supprimer/' + creneauId;
+        form.submit();
+    }
+
+    // --- Modal Logic : Atelier (NEW) ---
+    function openEditAtelierModal(button) {
+        const id = button.getAttribute('data-id');
+        const titre = button.getAttribute('data-titre');
+        const description = button.getAttribute('data-description');
+        const animateurId = button.getAttribute('data-animateur-id');
+
+        document.getElementById('editAtelierId').value = id;
+        document.getElementById('editAtelierTitre').value = titre;
+        document.getElementById('editAtelierDescription').value = description;
+        document.getElementById('editAtelierAnimateur').value = animateurId;
+
+        document.getElementById('editAtelierModal').classList.add('active');
+    }
+
+    function closeAtelierModal() {
+        document.getElementById('editAtelierModal').classList.remove('active');
+    }
+
+    function deleteAtelier() {
+        const atelierId = document.getElementById('editAtelierId').value;
+        const form = document.getElementById('editAtelierForm');
+        form.action = '/admin/ateliers/supprimer/' + atelierId;
+        form.submit();
+    }
+
+    // Close on click outside
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('editModal')) {
+            closeModal();
+        }
+        if (event.target == document.getElementById('editAtelierModal')) {
+            closeAtelierModal();
+        }
+    }
+</script>
+
+</body>
+</html>

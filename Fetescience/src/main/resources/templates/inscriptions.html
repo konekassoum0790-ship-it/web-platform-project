@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/inscription.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Vos inscriptions</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <!-- ✅ Leaflet CSS -->
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+</head>
+
+<body>
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<h1 id="inscription-planning">Vos inscriptions aux ateliers</h1>
+
+<!-- ✅ Messages de succès/erreur -->
+<div th:if="${success}" class="alert alert-success"
+     style="color: #155724; background: #d4edda; padding: 10px; margin: 15px; border-radius: 5px;">
+    ✅ <span th:text="${success}"></span>
+</div>
+
+<div th:if="${error}" class="alert alert-danger"
+     style="color: #721c24; background: #f8d7da; padding: 10px; margin: 15px; border-radius: 5px;">
+    ❌ <span th:text="${error}"></span>
+</div>
+
+<div id="inscription-list">
+
+    <!-- ✅ Aucun atelier -->
+    <div th:if="${inscriptions.isEmpty()}"
+         style="text-align: center; padding: 40px; color: #666;">
+        <p style="font-size: 1.2em;">
+            Vous n'avez aucune inscription pour le moment.
+            Veuillez vous inscrire.
+        </p>
+    </div>
+
+    <!-- ✅ Liste des inscriptions -->
+    <div th:each="inscription : ${inscriptions}"
+         class="inscription"
+         th:id="'inscription-row-' + ${inscription.id}">
+
+        <table>
+            <tr>
+                <td>Titre</td>
+                <td th:text="${inscription.creneau.atelier.titre}">Titre</td>
+            </tr>
+
+            <tr>
+                <td>Créneau</td>
+                <td th:text="${inscription.creneau.horaireDebut} + 'h'">Horaire</td>
+            </tr>
+
+            <tr>
+                <td>Lieu</td>
+                <td th:text="${inscription.creneau.lieu}">Lieu</td>
+            </tr>
+
+            <!-- ✅ MAP -->
+            <tr>
+                <td colspan="2">
+                    <div class="map"
+                         th:attr="data-address=${inscription.creneau.lieu}"
+                         style="height:250px; width:100%; margin-top:10px; border-radius:8px;">
+                    </div>
+                </td>
+            </tr>
+            <!-- ✅ BOUTON ITINÉRAIRE GOOGLE MAPS -->
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <button
+                            type="button"
+                            class="btn btn-primary btn-map"
+                            style="margin-top: 10px;"
+                            th:data-lieu="${inscription.creneau.lieu}"
+                            onclick="openGoogleMaps(this.getAttribute('data-lieu'))">
+                         Itinéraire Google Maps
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <button
+                            type="button"
+                            class="btn btn-primary btn-map"
+                            style="margin-top: 8px;"
+                            th:data-lieu="${inscription.creneau.lieu}"
+                            onclick="openGoogleMapsFromCurrentLocation(this.getAttribute('data-lieu'))">
+                         Itinéraire depuis ma position
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Durée</td>
+                <td th:text="${inscription.creneau.duree} + ' min'">Durée</td>
+            </tr>
+
+            <tr>
+                <td>Statut</td>
+                <td>
+                    <span th:if="${inscription.statut.name() == 'EN_ATTENTE'}" style="color: orange;">⏳ En attente</span>
+                    <span th:if="${inscription.statut.name() == 'VALIDEE'}" style="color: green;">✅ Validée</span>
+                    <span th:if="${inscription.statut.name() == 'REFUSEE'}" style="color: red;">❌ Refusée</span>
+                </td>
+            </tr>
+        </table>
+
+        <div style="margin-top: 10px;">
+            <button th:if="${inscription.statut.name() == 'EN_ATTENTE' or inscription.statut.name() == 'VALIDEE'}"
+                    type="button"
+                    class="btn btn-desinscription"
+                    th:data-id="${inscription.id}"
+                    onclick="deleteInscription(this.getAttribute('data-id'))">
+                Se désinscrire
+            </button>
+
+            <span th:if="${inscription.statut.name() == 'REFUSEE'}"
+                  style="color: #999; font-style: italic;">
+                (Désinscription non disponible)
+            </span>
+        </div>
+
+        <hr>
+    </div>
+</div>
+
+<!-- ✅ Nouvelle inscription -->
+<div style="text-align: center; margin: 30px;">
+    <a th:href="@{/nouvelle-inscription}" class="btn btn-primary">Nouvelle inscription</a>
+</div>
+
+<!-- Scripts existants -->
+<script th:src="@{/js/deleteInscription.js}"></script>
+
+<!-- ✅ Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- ✅ Script MAP -->
+<script th:src="@{/js/maps.js}"></script>
+
+</body>
+</html>

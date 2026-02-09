@@ -1,0 +1,182 @@
+/**
+ * Styles pour la page des inscriptions
+ * Fête de la Science - CNRS
+ */
+
+/* === VARIABLES === */
+:root {
+    --primary-color: #0051a5;
+    --danger-color: #dc3545;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffc107;
+    --warning-text: #856404;
+    --gray-light: #f5f5f5;
+    --gray-medium: #ddd;
+    --gray-dark: #555;
+}
+
+/* === STYLES GÉNÉRAUX === */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--gray-light);
+    line-height: 1.6;
+}
+
+/* === TITRE PRINCIPAL === */
+#inscription-planning {
+    color: var(--primary-color);
+    text-align: center;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+
+/* === CONTENEUR DES INSCRIPTIONS === */
+#inscription-list {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* === CARTE D'INSCRIPTION === */
+.inscription {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fafafa;
+    border-radius: 5px;
+    border: 1px solid var(--gray-medium);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.inscription:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* === TABLEAU D'INFORMATIONS === */
+.inscription table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.inscription table td {
+    padding: 8px;
+    border-bottom: 1px solid var(--gray-medium);
+}
+
+.inscription table tr:last-child td {
+    border-bottom: none;
+}
+
+.inscription table td:first-child {
+    font-weight: bold;
+    width: 150px;
+    color: var(--gray-dark);
+}
+
+.inscription table td:last-child {
+    color: #333;
+}
+
+/* === BOUTON DE DÉSINSCRIPTION === */
+.btn-desinscription {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-weight: 600;
+}
+
+.btn-desinscription:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-desinscription:active {
+    transform: translateY(0);
+}
+
+.btn-desinscription:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+.btn-map {
+    width: 100%;           /* Force la largeur à 100% du conteneur */
+    margin-top: 10px;      /* Espacement du haut */
+    padding: 10px 20px;    /* Espacement interne */
+    box-sizing: border-box; /* Assure que le padding ne dépasse pas */
+}
+
+/* === MESSAGE TÉLÉPHONER === */
+.message-telephoner {
+    background-color: var(--warning-bg);
+    border: 2px solid var(--warning-border);
+    color: var(--warning-text);
+    padding: 12px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* === SÉPARATEUR === */
+hr {
+    border: none;
+    border-top: 2px solid var(--gray-medium);
+    margin: 30px 0;
+}
+
+/* === MESSAGE AUCUNE INSCRIPTION === */
+.aucune-inscription {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 40px;
+    font-size: 1.2em;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    #inscription-planning {
+        font-size: 1.5em;
+    }
+
+    .inscription table td:first-child {
+        width: 120px;
+        font-size: 0.9em;
+    }
+
+    .btn-desinscription {
+        padding: 12px;
+        font-size: 14px;
+    }
+}

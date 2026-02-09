@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gérer l'atelier</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/inscription.css}">
+    <link rel="stylesheet" th:href="@{/css/management_grid.css}">
+
+    <!-- ✅ AJOUT : Leaflet CSS (MAP) -->
+    <!-- Leaflet CSS -->
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<div class="container" style="max-width: 1100px;">
+
+    <div class="dashboard-header">
+        <div class="header-text">
+            <h2>Gestion de l'atelier</h2>
+            <h3 th:text="${atelier.titre}">Titre de l'Atelier</h3>
+
+            <div th:if="${atelier.description != null and !atelier.description.isEmpty()}" style="margin-bottom: 20px;">
+
+                <div th:if="${#strings.length(atelier.description) <= 100}">
+                    <p th:text="${atelier.description}" style="color: #555;"></p>
+                </div>
+
+                <div th:if="${#strings.length(atelier.description) > 100}">
+                    <p>
+                    <span id="desc-short">
+                        <span th:text="${#strings.substring(atelier.description, 0, 100)}"></span>...
+                    </span>
+
+                        <span id="desc-full" style="display:none;" th:text="${atelier.description}"></span>
+
+                        <br>
+                        <a href="javascript:void(0);"
+                           onclick="toggleDescription()"
+                           id="toggle-desc-btn"
+                           style="color: grey; font-size: 0.85em; text-decoration: underline; cursor: pointer;">
+                            Voir plus
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px; align-items: flex-start; flex-shrink: 0;">
+            <a th:href="@{/animateur_page}" class="btn btn-secondary btn-header btn-match">
+                Retour au tableau de bord
+            </a>
+
+            <a th:href="@{/animateur/ateliers/{id}/modifier(id=${atelier.id})}"
+               class="btn btn-navbar btn-outline btn-edit btn-match">
+                <img th:src="@{/images/edit_icon.png}" alt="Edit" style="width: 20px; height: 20px;">
+                Modifier
+            </a>
+
+            <form th:action="@{/animateur/ateliers/{id}/supprimer(id=${atelier.id})}" method="post"
+                  style="display:inline; width: 100%;">
+                <button type="submit"
+                        class="btn btn-navbar btn-outline"
+                        style="cursor: pointer; color: #dc3545; border-color: #dc3545; width: 100%;"
+                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet atelier ?\n\nCette action est irréversible et supprimera tous les créneaux et inscriptions associés.');">
+                    Supprimer l'atelier
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${success}" class="alert"
+         style="color: #155724; background: #d4edda; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        ✅ <span th:text="${success}">Atelier modifié</span>
+    </div>
+
+    <div th:if="${error}" class="alert"
+         style="color: #721c24; background: #f8d7da; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #f5c6cb;">
+        ❌ <span th:text="${error}"></span>
+    </div>
+
+    <div class="management-grid">
+
+        <!-- ================= CRÉNEAUX EXISTANTS ================= -->
+        <div class="card">
+            <h3 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+                📅 Créneaux planifiés
+            </h3>
+
+            <div th:if="${#lists.isEmpty(atelier.creneaux)}" class="aucune-inscription">
+                <p style="text-align: center; color: #888;">Aucun créneau n'a encore été ajouté.</p>
+            </div>
+
+            <table th:unless="${#lists.isEmpty(atelier.creneaux)}" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                <tr style="text-align: left; background: #f8f9fa; color: #666;">
+                    <th style="padding: 12px;">Horaire</th>
+                    <th style="padding: 12px;">Durée</th>
+                    <th style="padding: 12px;">Lieu</th>
+                    <th style="padding: 12px;">Places</th>
+                    <th style="padding: 12px;">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${atelier.creneaux}" style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px;">
+                        <span class="time-badge" th:text="${c.horaireDebut} + 'h00'">14h00</span>
+                    </td>
+                    <td style="padding: 12px;" th:text="${c.duree} + ' min'">60 min</td>
+                    <td style="padding: 12px;" th:text="${c.lieu}">Salle B</td>
+                    <td style="padding: 12px;">
+                        <strong th:text="${c.inscriptions.size()}">0</strong> /
+                        <span th:text="${c.capacite}">20</span>
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        <img th:src="@{/images/edit_icon.png}"
+                             alt="Modifier"
+                             width="20"
+                             class="action-btn"
+                             th:onclick="editCreneau([[${c.id}]], [[${c.horaireDebut}]], [[${c.duree}]], [[${c.capacite}]], [[${c.lieu}]])"
+                             title="Modifier ce créneau">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ================= AJOUT CRÉNEAU ================= -->
+        <div class="card" style="background-color: #fcfcfc;">
+            <h3 id="form-title"
+                style="color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+                ➕ Ajouter un créneau
+            </h3>
+
+            <form th:action="@{/animateur/ateliers/{AtelierId}/creneaux(AtelierId=${atelier.id})}"
+                  th:object="${nouveauCreneau}" method="post" id="creneau-form">
+
+                <input type="hidden" th:field="*{id}" id="creneauId">
+
+                <div class="form-group">
+                    <label>Heure de début (H) :</label>
+                    <input type="number" th:field="*{horaireDebut}" id="horaire"
+                           min="8" max="20" placeholder="ex: 14" required class="form-control">
+                    <small style="color: #888; font-size: 0.8em;">Format 24h (ex: 9, 14, 16)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Durée (minutes) :</label>
+                    <input type="number" th:field="*{duree}" id="duree"
+                           step="15" min="15" value="60" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Capacité :</label>
+                    <input type="number" th:field="*{capacite}" id="capacite"
+                           min="1" value="20" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Lieu :</label>
+                    <input type="text" th:field="*{lieu}" id="lieu"
+                           placeholder="Ex: Salle 12, Bat. B" required class="form-control">
+                </div>
+
+                <!-- ✅ AJOUT : MAP PREVIEW (aucun champ supprimé) -->
+                <div id="map-preview"
+                     class="map"
+                     data-address=""
+                     style="height:250px; width:100%; margin-top:10px; border-radius:8px; border:1px solid #ddd;">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" id="submit-btn" class="btn btn-primary" style="flex: 1;">
+                        Ajouter ce créneau
+                    </button>
+                    <button type="button" id="cancel-btn" onclick="resetForm()" class="btn btn-secondary"
+                            style="display: none; width: auto; padding: 0 15px;">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: site-footer}"></div>
+
+<script th:src="@{/js/gererAtelier.js}"></script>
+
+<!-- ✅ AJOUT : Leaflet JS + map preview -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script th:src="@{/js/maps.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Créer un Atelier</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/inscription.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<div class="container">
+    <h2 th:text="${atelier.id == null ? 'Créer un nouvel Atelier' : 'Modifier l''Atelier'}">Créer un Atelier</h2>
+
+    <form th:action="@{/animateur/ateliers}" th:object="${atelier}" method="post">
+
+        <input type="hidden" th:field="*{id}" />   <!-- Pour la fonctionalité edit-->
+
+        <div class="form-group">
+            <label for="titre">Titre de l'atelier :</label>
+            <input type="text" id="titre" th:field="*{titre}" placeholder="Ex: Robotique pour tous" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description (max 500 caractères) :</label>
+            <textarea id="description" th:field="*{description}"
+                      placeholder="Décrivez brièvement le contenu de l'atelier..."
+                      rows="4" maxlength="500" class="form-control"></textarea>
+            <small class="form-text text-muted">500 caractères maximum.</small>
+        </div>
+
+        <div class="form-actions">
+
+            <button type="submit" class="btn btn-primary"
+                    th:text="${atelier.id == null ? 'Créer et ajouter des créneaux' : 'Enregistrer les modifications'}">
+                Valider
+            </button>
+
+            <a th:href="${atelier.id == null ? '/animateur_page' : '/animateur/ateliers/' + atelier.id + '/gestion'}"
+               class="btn btn-secondary">Annuler</a>
+
+        </div>
+    </form>
+
+    <br>
+
+</div>
+
+<div th:replace="~{fragments/footer :: site-footer}"></div>
+
+<style>
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        resize: vertical;
+    }
+    textarea:focus {
+        outline: none;
+        border-color: #0051a5;
+    }
+</style>
+
+</body>
+</html>

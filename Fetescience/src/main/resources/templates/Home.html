@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fête de la Science - Polytech Nancy 2026 - Accueil</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/home_style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<main>
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="hero-badge">Édition 2026</span>
+            <h1>Fête de la Science - Polytech Nancy</h1>
+            <p class="hero-subtitle">Le rendez-vous des sciences pour les collèges et lycées</p>
+            <p class="hero-date">Semaine du 22 au 28 janvier 2026</p>
+
+            <div class="hero-actions">
+                <a th:href="@{/nouvelle-inscription}" class="btn btn-cta">S'inscrire aujourd'hui</a>
+                <a href="#programme" class="btn btn-outline-light">Consulter le catalogue</a>
+            </div>
+        </div>
+        <div class="hero-shape shape-1"></div>
+        <div class="hero-shape shape-2"></div>
+    </section>
+
+    <section class="intro-section">
+        <div class="content-wrapper">
+            <div class="intro-text">
+                <h2>La recherche ouvre ses portes aux scolaires</h2>
+                <div class="divider"></div>
+                <p>
+                    Organisé par le CNRS et l'Université de Lorraine, la fête de la science à Polytech Nancy permet aux élèves
+                    de découvrir le monde de la recherche "en train de se faire".
+                    Cette année, plus de 20 laboratoires se mobilisent pour accueillir les classes
+                    autour de thématiques variées : du numérique aux sciences de l'environnement,
+                    en passant par la biologie et les sciences humaines.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="programme" class="activities-section">
+        <div class="content-wrapper">
+            <div class="section-header">
+                <h2>Les Thématiques 2026</h2>
+                <p>Des ateliers immersifs au cœur des laboratoires</p>
+            </div>
+
+            <div class="activities-grid">
+                <article class="activity-card">
+                    <div class="card-decoration"></div>
+                    <h3>Santé & Neurosciences</h3>
+                    <p>
+                        Ateliers pratiques sur la mémoire et l'olfaction. Comprendre le fonctionnement du cerveau
+                        à travers des expériences ludiques proposées par l'Inserm et le Neurocentre Magendie.
+                    </p>
+                </article>
+
+                <article class="activity-card">
+                    <div class="card-decoration"></div>
+                    <h3>IA & Robotique</h3>
+                    <p>
+                        Démonstrations d'Intelligence Artificielle et de robotique.
+                        Découvrez comment les mathématiques et l'informatique façonnent le monde de demain avec l'Inria.
+                    </p>
+                </article>
+
+                <article class="activity-card">
+                    <div class="card-decoration"></div>
+                    <h3>Climat & Océanographie</h3>
+                    <p>
+                        Analysez des carottages sédimentaires et explorez les climats passés.
+                        Une plongée dans les géosciences pour comprendre les enjeux environnementaux actuels.
+                    </p>
+                </article>
+
+                <article class="activity-card">
+                    <div class="card-decoration"></div>
+                    <h3>Matière & Photonique</h3>
+                    <p>
+                        De la chimie moléculaire aux lasers ultra-puissants. Assistez à des expériences
+                        spectaculaires sur la lumière et la matière dans les salles blanches des laboratoires.
+                    </p>
+                </article>
+
+                <article class="activity-card">
+                    <div class="card-decoration"></div>
+                    <h3>Sciences Hors les Murs</h3>
+                    <p>
+                        Le circuit se déplace aussi dans les établissements !
+                        Rencontres exclusives prévues dans les lycées d'Aiguillon, Terrasson, Orthez et Aire-sur-l'Adour.
+                    </p>
+                </article>
+
+                <article class="activity-card">
+                    <div class="card-decoration"></div>
+                    <h3>Archéologie & Société</h3>
+                    <p>
+                        L'histoire et les sociétés à la loupe. Découvrez les méthodes scientifiques
+                        appliquées à l'archéologie et aux sciences sociales.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="content-wrapper">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-number">40+</span>
+                        <span class="stat-label">Laboratoires mobilisés</span>
+                    </div>
+                    <div class="stat-bar"></div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-number">2000</span>
+                        <span class="stat-label">Élèves attendus</span>
+                    </div>
+                    <div class="stat-bar"></div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Jours d'immersion</span>
+                    </div>
+                    <div class="stat-bar"></div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Gratuit & Accessible</span>
+                    </div>
+                    <div class="stat-bar"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: site-footer}"></div>
+
+</body>
+</html>

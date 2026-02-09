@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Nouvelle inscription - Fête de la Science</title>
+
+    <!-- ✅ Leaflet CSS -->
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+</head>
+
+<body>
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+<div class="container">
+    <header>
+        <h1>Inscription à un atelier</h1>
+    </header>
+
+    <main>
+        <div th:if="${erreur}" class="alert alert-danger" style="color:red; background:#fee; padding:10px;">
+            <span th:text="${erreur}"></span>
+        </div>
+
+        <form id="form-inscription" method="POST" th:action="@{/inscrire_atelier}">
+
+            <div class="form-group">
+                <label for="nom">Votre Nom :</label>
+                <input
+                        type="text"
+                        id="nom"
+                        name="nom"
+                        required
+                        th:value="${preFilledName}"
+                        th:readonly="${preFilledName != null}"
+                        th:classappend="${preFilledName != null} ? 'readonly-input' : ''"
+                        placeholder="Ex: Alice">
+
+                <small th:if="${preFilledName != null}" style="color:green;">
+                    ✓ Compte connecté vérifié
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="atelier">Atelier :</label>
+                <div class="input-with-icon">
+                    <select id="atelier" name="atelierId" onchange="chargerCreneaux()">
+                    <option value="">-- Sélectionnez un atelier --</option>
+                        <option th:each="atelier : ${ateliers}"
+                                th:value="${atelier.id}"
+                                th:text="${atelier.titre}"
+                                th:data-titre="${atelier.titre}"
+                                th:data-animateur="${atelier.animateur != null ? atelier.animateur.nom : 'Non assigné'}"
+                                th:data-description="${atelier.description}">
+
+                        </option>
+                    </select>
+                    <img th:src="@{/images/view.png}" class="view-icon" onclick="toggleDetails('atelier')" alt="Voir détails" title="Voir les détails de l'atelier">
+                </div>
+
+                <div id="details-atelier" class="info-box" style="display:none;">
+                    <h4>Détails de l'Atelier</h4>
+                    <p><strong>Titre :</strong> <span id="info-atelier-titre"></span></p>
+                    <p><strong>Description :</strong> <span id="info-atelier-description"></span></p>
+                    <p><strong>Animateur :</strong> <span id="info-atelier-animateur"></span></p>
+                </div>
+            </div>
+
+            <div class="form-group" id="creneau-group" style="display:none;">
+                <label for="creneau">Créneau disponible :</label>
+                <div class="input-with-icon">
+                    <select id="creneau" name="creneauId" required onchange="onCreneauChange()"></select>
+                    <img th:src="@{/images/view.png}" class="view-icon" onclick="toggleDetails('creneau')" alt="Voir détails" title="Voir les détails du créneau">
+                </div>
+                <small id="creneau-msg">Seuls les créneaux avec des places sont affichés.</small>
+
+                <div id="details-creneau" class="info-box">
+                    <h4>Détails du Créneau</h4>
+
+                    <p><strong>Horaire :</strong> <span id="info-creneau-horaire"></span></p>
+                    <p><strong>Durée :</strong> <span id="info-creneau-duree"></span></p>
+                    <p><strong>Lieu :</strong> <span id="info-creneau-lieu"></span></p>
+
+                    <!-- ✅ MAP -->
+                    <div id="map-creneau"
+                         style="height:250px; width:100%; margin-top:10px; border-radius:8px;">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="btn-submit" class="btn btn-primary" disabled>S'inscrire</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script th:src="@{/js/maps.js}"></script>
+<script th:src="@{/js/charger_creneaux.js}"></script>
+</body>
+</html>

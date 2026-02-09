@@ -1,0 +1,10 @@
+# IntelliJ Project settings
+.idea/
+*.iml
+*.iws
+
+# Mac OS junk
+.DS_Store
+
+# Maven build folder (just in case)
+target/

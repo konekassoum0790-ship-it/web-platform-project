@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Connexion - Fête de la Science</title>
+</head>
+<body>
+<div class="container" style="max-width: 500px;">
+    <header>
+        <h1>Connexion</h1>
+        <p class="subtitle">Accédez à votre espace personnel</p>
+    </header>
+
+    <main>
+        <!-- ✅ Messages d'erreur/succès -->
+        <div th:if="${param.error}" class="alert" style="color: #721c24; background: #f8d7da; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            ❌ Email ou mot de passe incorrect
+        </div>
+        <div th:if="${param.logout}" class="alert" style="color: #155724; background: #d4edda; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            ✅ Vous avez été déconnecté avec succès
+        </div>
+
+        <!-- ✅ FORMULAIRE CORRIGÉ -->
+        <form method="POST" th:action="@{/auth/login}">
+            <div class="form-group">
+                <label for="username">Email :</label>
+                <input type="email"
+                       id="username"
+                       name="username"
+                       required
+                       placeholder="ex: alice@test.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe :</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+            </div>
+        </form>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+        <div style="text-align: center;">
+            <p>Pas encore de compte ?</p>
+            <a th:href="@{/auth/register}" style="color: var(--primary-color); font-weight: bold; text-decoration: none;">Créer un compte</a>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <a th:href="@{/}" style="color: #6c757d; text-decoration: none; font-size: 0.9em;">← Retour à l'accueil</a>
+        </div>
+    </main>
+</div>
+
+<script th:if="${param.logout}">
+    setTimeout(function() {
+        window.location.href = "/";
+    }, 1000); // 1000ms = 1 seconds
+</script>
+
+</body>
+</html>

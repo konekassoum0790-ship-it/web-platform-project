@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="user-bar" class="user-bar">
+    <div class="user-bar-content">
+        <a href="/" class="site-title">
+            Fête de la Science - Polytech Nancy
+        </a>
+
+        <div style="flex-grow: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px;">
+
+            <!-- OPTION A: LOGGED IN -->
+            <div th:if="${session.user != null}" class="user-info">
+                <span> Bonjour, <strong th:text="${session.user.nom}">User</strong></span>
+
+                <!-- Dashboard Link based on Role -->
+                <a th:if="${session.user.role.name() == 'PARTICIPANT'}"
+                   th:href="@{'/inscriptions/' + ${session.user.id}}" class="btn-navbar">
+                    Mes Inscriptions
+                </a>
+                <a th:if="${session.user.role.name() == 'ANIMATEUR'}"
+                   href="/animateur_page" class="btn-navbar">
+                    Espace Animateur
+                </a>
+
+                <a th:if="${session.user.role.name() == 'ADMIN'}"
+                   th:href="@{/admin/ateliers}" class="btn-navbar">
+                    Gestion Ateliers
+                </a>
+                <a th:if="${session.user.role.name() == 'ADMIN'}"
+                   th:href="@{/admin/inscriptions}" class="btn-navbar">
+                    Gestion Inscriptions
+                </a>
+
+                <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-navbar btn-outline" style="cursor: pointer;">
+                        Déconnexion
+                    </button>
+                </form>
+
+
+            </div>
+
+            <!-- OPTION B: NOT LOGGED IN -->
+            <div th:if="${session.user == null}" class="auth-buttons">
+                <a th:href="@{/auth/login}" class="btn-navbar btn-highlightwhite">Se connecter</a>
+                <a th:href="@{/auth/register}" class="btn-navbar btn-highlight">Créer un compte</a>
+            </div>
+        </div>
+        <a href="/" class="logo-container" title="Retour à l'accueil" style="margin-left: 20px;">
+            <img th:src="@{/images/home_icon.png}" alt="Accueil"
+                 style="height: 30px; width: auto; vertical-align: middle;">
+        </a>
+
+    </div>
+
+</div>
+</body>
+</html>

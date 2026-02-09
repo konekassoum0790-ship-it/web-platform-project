@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Accès Refusé - Fête de la Science</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 50px 20px;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            z-index: 2;
+        }
+
+        .error-code {
+            font-size: 5em;
+            color: var(--danger-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .error-title {
+            font-size: 2em;
+            color: var(--dark-gray);
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: var(--medium-gray);
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        /* Investigator Image Styling - STATIC VERSION */
+        .investigator-container {
+            position: absolute;
+            left: 5%; /* Left corner area */
+            top: 50%; /* Vertical middle */
+            transform: translateY(-50%);
+            z-index: 1;
+            /* Removed outline/border related styles if any were inherited */
+        }
+
+        .investigator-img {
+            max-width: 250px;
+            height: auto;
+            border-radius: 10px;
+            /* box-shadow: 0 4px 8px rgba(0,0,0,0.1);  <-- REMOVED shadow if you want it flat */
+            /* transition removed since no hover effect needed */
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #666;
+            margin-top: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .investigator-container {
+                position: static;
+                transform: none;
+                margin-bottom: 20px;
+                display: block;
+                text-align: center;
+            }
+
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ NAVBAR -->
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<div class="main-content">
+    <!-- Image is now just a DIV, not a Link -->
+    <div class="investigator-container">
+        <img th:src="@{/images/investigator_404.png}" alt="Investigateur" class="investigator-img">
+    </div>
+
+    <!-- Error Message Centered -->
+    <div class="error-container">
+        <div class="error-code">403</div>
+        <h1 class="error-title">Accès Interdit</h1>
+
+        <p class="error-message">
+            Désolé, vous n'avez pas la permission d'accéder à cette page.<br>
+            Elle est peut-être réservée à un autre utilisateur ou nécessite des droits d'administrateur.
+        </p>
+
+        <div class="actions">
+            <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+            <!-- Optional: Show login link if not logged in -->
+            <a th:if="${session.user == null}" href="/auth/login" class="btn btn-secondary">Se connecter</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: site-footer}"></div>
+
+</body>
+</html>

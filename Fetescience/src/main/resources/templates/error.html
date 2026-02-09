@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Erreur - Fête de la Science</title>
+    <style>
+        .error-container { text-align: center; padding: 50px; max-width: 600px; margin: 0 auto; }
+        .error-icon { font-size: 4em; color: #dc3545; margin-bottom: 20px; }
+        .error-title { font-size: 2em; color: #333; margin-bottom: 10px; }
+        .error-desc { color: #666; font-size: 1.1em; margin-bottom: 30px; }
+        .tech-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 30px;
+            display: none; /* Hidden by default for security! */
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ NAVBAR -->
+<div th:replace="~{fragments/navbar :: user-bar}"></div>
+
+<div class="container error-container">
+    <div class="error-icon">⚠️</div>
+
+    <h1 class="error-title">Une erreur inattendue est survenue</h1>
+
+    <p class="error-desc">
+        Nos équipes ont été notifiées. Veuillez réessayer plus tard ou retourner à l'accueil.
+    </p>
+
+    <!-- OPTIONAL: Show status code safely (e.g., 500) -->
+    <p style="color: #999;">Code d'erreur : <span th:text="${status}">500</span></p>
+
+    <!-- SECURITY: Only show the message if it's NOT a 500 (or if you are in dev mode) -->
+    <div th:if="${status != 500}" class="tech-info" style="display:block;">
+        <span th:text="${error}">Détail</span>
+    </div>
+
+    <div class="actions">
+        <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>.
+
+</body>
+</html>
